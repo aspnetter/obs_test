@@ -16,7 +16,13 @@ If for some reason it’s not available, install or update it as the following:
 
 ## Understand this workspace
 
-Run `nx graph` to see a diagram of the dependencies of the projects.
+Although the current size and scope of the solution doesn't really require dependency management across out 2 projects, NX still helps to generate the necessary workspace and apps and do the basic build / run setup in seconds.
+
+It also generated all the structures for the automated tests which I ended up not doing as ran out of time :(
+
+Run `nx graph` to see a diagram of the dependencies of the projects... in this case, to see, there are none :)
+
+The reasons I chose it, too - it was a good learning exercise on something fairly simple.
 
 ## Building
 
@@ -44,6 +50,12 @@ Open the new terminal and run the client CLI app specifying the **full system** 
 
 `sh test/obs_test.sh <inputJsonPath> <outputJsonPath>`
 
-## Further help
+## To Be Improved
 
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+- Smarter exception handling with more flexibility
+
+- I am really not a fan of the way the command handler methods are injected into the Simulator class (them being global symbols it's just referencing now), I had a few ideas but couldn't choose the best one so just left what works. Could definitely use some kind of smarter dependency injection here and a better decision on what class'es responsibility they should be
+
+- Tests, tests, tests! This project is an amazing opportunity to exercise all kinds of automated testing, starting from unit tests for smaller uncoupled methods and ending with e2e - integration ones where we just provide the JSON input and compare results to the JSON output we expect
+
+- Would be cool to visualize the moves with some console art but that's too advanced :)
