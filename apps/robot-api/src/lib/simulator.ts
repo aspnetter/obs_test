@@ -2,6 +2,10 @@ import { log } from 'console';
 import { getCommandHandler } from './handlers';
 import { Command, RobotState, Terrain } from './types';
 
+/**
+ * Runs a sequence of commands with the given starting state 
+ * on the given terrain map
+ */
 export class Simulator {
   private readonly _terrain: Terrain[][];
 
@@ -9,7 +13,15 @@ export class Simulator {
     this._terrain = terrain;
   }
 
+  /**
+   * 
+   * Run the commands starting with the given initial state
+   * @param state - initial state of the robot
+   * @param commands - a sequence of commands to run
+   * @returns 
+   */
   public run(state: RobotState, commands: Command[]): RobotState {
+    // reverse so we treat it like a stack
     commands.reverse();
     while (commands.length > 0) {
       const command = commands.pop();

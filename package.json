@@ -7,6 +7,7 @@
     "api:run": "npx nx serve robot-api",
     "cli:build": "npx nx build robot-cli",
     "cli:run": "npx nx serve robot-cli",
+    "all:build": "yarn api:build && yarn cli:build",
     "format:check": "prettier --check './**/*.ts'",
     "format:fix": "prettier --write './**/*.ts'"
   },

@@ -6,7 +6,7 @@ import { BatteryUnits, Command, Facing, RobotState, Terrain } from './types';
 const FACING_OPTIONS = [Facing.North, Facing.East, Facing.South, Facing.West];
 
 export class ObstactleError extends Error {
-  code = 'ObstactleError';
+  readonly code = 'ObstactleError';
   constructor() {
     super('Obstacle on my way!');
   }

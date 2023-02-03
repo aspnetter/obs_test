@@ -1,4 +1,14 @@
 /**
+ * Represent the error thrown when there's less battery than required for the operation
+ */
+export class BatteryError extends Error {
+    readonly code = 'BatteryError';
+    constructor() {
+      super('Not enough battery!');
+    }
+  }
+
+/**
  * Check if there's enough battery life
  *
  * @param unitsLeft - current battery units
@@ -9,7 +19,7 @@ export const checkBatteryEnoughFor = function (
   unitsRequired: number
 ): void {
   if (unitsLeft - unitsRequired < 0) {
-    throw new Error('Not enough battery!');
+    throw new BatteryError();
   }
 };
 
@@ -34,6 +44,6 @@ export const checkCanMove = function (
     newX < terrain[newY].length;
 
   if (!isValidLocation) {
-    throw new RangeError(`Location X:${newX}, Y:${newY} is out of range!`);
+    throw new RangeError(`Location X:${newX}, Y:${newY} is out of range - please check your instructions!`);
   }
 };
