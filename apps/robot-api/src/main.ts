@@ -5,10 +5,11 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { Simulator } from './lib/simulator';
-import { InputInstruction, RobotState } from './lib/types';
+import { InputInstruction, Position, RobotState } from './lib/types';
 import { ObstactleError } from './lib/handlers';
 import { log } from 'console';
 import { BackupStrategies } from './strategies';
+import { BatteryError } from './lib/helpers/validators';
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -32,24 +33,25 @@ apiApp.get('/', (_req, res) => {
 
 apiApp.post('/', (req, res) => {
   const input: InputInstruction = req.body;
-  const robotSimulator = new Simulator(input.terrain);
+  // initialize the current state
+  const state: RobotState = {
+    batteryLeft: input.battery,
+    position: { ... input.initialPosition },
+    samplesCollected: [],
+    cellsVisited: [],
+  };
+  // save the initial positions from the input in case we need to change the strategy
+  const initialPosition: Position = {...input.initialPosition};
 
+  const robotSimulator = new Simulator(input.terrain);
   let finalState = null;
   let strategy = input.commands;
 
   do {
     try {
-      const initialState: RobotState = {
-        batteryLeft: input.battery,
-        position: {
-          location: input.initialPosition.location,
-          facing: input.initialPosition.facing,
-        },
-        samplesCollected: [],
-        cellsVisited: [],
-      };
-
-      finalState = robotSimulator.run(initialState, strategy);
+      // reset the position and facing direction before we start with the new strategy
+      state.position = {...initialPosition};
+      finalState = robotSimulator.run(state, strategy);
 
       res.send({
         VisitedCells: finalState.cellsVisited,
@@ -61,6 +63,15 @@ apiApp.post('/', (req, res) => {
       if (error instanceof ObstactleError) {
         strategy = BackupStrategies.pop();
         log(`Faced an Obstacle on my way, new strategy: ${strategy}`);
+      } else {
+        let message = "A system error has occurred";
+
+        // TODO: could be made more flexible and generic here
+        if(error instanceof BatteryError || error instanceof RangeError) {
+          message = `${message}: ${error.message}`;
+        }
+
+        res.status(500).send(message);
       }
     }
   } while (!finalState && strategy); // before we succesfully execute the strategy or run out of backup strategies
